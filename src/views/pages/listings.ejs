@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<div class="space-y-6">
+  <!-- Search & Filter Bar -->
+  <form action="/listings" method="GET" class="border border-neutral-800 bg-neutral-900/40 p-4 rounded-xl flex flex-wrap gap-3 items-center justify-between">
+    <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Search textbooks, calculators, gear..." class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white w-full sm:w-80 focus:outline-none focus:border-neutral-500">
+
+    <div class="flex flex-wrap gap-2">
+      <select name="type" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-neutral-300 focus:outline-none">
+        <option value="">All Types</option>
+        <option value="SELL" <%= filters.type === 'SELL' ? 'selected' : '' %>>💰 Sell</option>
+        <option value="EXCHANGE" <%= filters.type === 'EXCHANGE' ? 'selected' : '' %>>🔄 Exchange</option>
+        <option value="GIVEAWAY" <%= filters.type === 'GIVEAWAY' ? 'selected' : '' %>>🎁 Giveaway</option>
+      </select>
+
+      <select name="category" class="bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-neutral-300 focus:outline-none">
+        <option value="">All Categories</option>
+        <option value="Electronics" <%= filters.category === 'Electronics' ? 'selected' : '' %>>Electronics</option>
+        <option value="Books" <%= filters.category === 'Books' ? 'selected' : '' %>>Books</option>
+        <option value="Study Materials" <%= filters.category === 'Study Materials' ? 'selected' : '' %>>Study Materials</option>
+        <option value="Other" <%= filters.category === 'Other' ? 'selected' : '' %>>Other</option>
+      </select>
+
+      <button type="submit" class="bg-white text-black px-4 py-2 rounded text-sm font-semibold hover:bg-neutral-200 transition">Filter</button>
+    </div>
+  </form>
+
+  <!-- Items Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <% if (listings.length === 0) { %>
+      <div class="col-span-full py-12 text-center text-neutral-500">
+        No active listings found. Be the first to post something!
+      </div>
+    <% } %>
+
+    <% listings.forEach(item => { %>
+      <a href="/listings/<%= item.id %>" class="group border border-neutral-800 bg-neutral-900/30 hover:border-neutral-700 rounded-xl overflow-hidden flex flex-col transition">
+        <div class="h-44 bg-neutral-900 flex items-center justify-center overflow-hidden border-b border-neutral-800">
+          <% if (item.image_url) { %>
+            <img src="<%= item.image_url %>" alt="<%= item.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+          <% } else { %>
+            <span class="text-neutral-600 text-xs">No Image</span>
+          <% } %>
+        </div>
+        <div class="p-4 flex-grow flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
+              <span><%= item.category %></span>
+              <span class="border border-neutral-800 px-1.5 py-0.5 rounded font-mono text-[10px]">
+                <%= item.listing_type %>
+              </span>
+            </div>
+            <h3 class="text-white font-medium text-sm group-hover:underline truncate"><%= item.title %></h3>
+          </div>
+          <div class="mt-4 pt-3 border-t border-neutral-800/60 flex items-center justify-between">
+            <span class="text-white font-bold text-sm">
+              <% if (item.listing_type === 'SELL') { %>
+                ₹<%= item.price %>
+              <% } else if (item.listing_type === 'GIVEAWAY') { %>
+                <span class="text-emerald-400">FREE</span>
+              <% } else { %>
+                <span class="text-neutral-400">Exchange</span>
+              <% } %>
+            </span>
+            <span class="text-xs text-neutral-500"><%= item.condition %></span>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

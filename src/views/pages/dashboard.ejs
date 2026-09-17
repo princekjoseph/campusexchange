@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-5xl mx-auto py-6 space-y-8">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Student Dashboard</h1>
+      <p class="text-xs text-neutral-400">Manage your active posts and completed transactions</p>
+    </div>
+    <a href="/listings/new" class="bg-white text-black px-4 py-2 rounded text-xs font-semibold hover:bg-neutral-200 transition">
+      + Post New Item
+    </a>
+  </div>
+
+  <!-- Metric Counters -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="border border-neutral-800 bg-neutral-900/50 p-4 rounded-xl">
+      <span class="text-xs text-neutral-500 block">Total Posted</span>
+      <span class="text-2xl font-bold text-white"><%= stats.total %></span>
+    </div>
+    <div class="border border-neutral-800 bg-neutral-900/50 p-4 rounded-xl">
+      <span class="text-xs text-neutral-500 block">Active Listings</span>
+      <span class="text-2xl font-bold text-emerald-400"><%= stats.active %></span>
+    </div>
+    <div class="border border-neutral-800 bg-neutral-900/50 p-4 rounded-xl">
+      <span class="text-xs text-neutral-500 block">Sold</span>
+      <span class="text-2xl font-bold text-white"><%= stats.sold %></span>
+    </div>
+    <div class="border border-neutral-800 bg-neutral-900/50 p-4 rounded-xl">
+      <span class="text-xs text-neutral-500 block">Given Away</span>
+      <span class="text-2xl font-bold text-white"><%= stats.given %></span>
+    </div>
+  </div>
+
+  <!-- Listings Table / Cards -->
+  <div class="border border-neutral-800 bg-neutral-900/30 rounded-xl overflow-hidden">
+    <div class="px-5 py-4 border-b border-neutral-800">
+      <h2 class="text-sm font-semibold text-white">Your Listings</h2>
+    </div>
+
+    <% if (listings.length === 0) { %>
+      <div class="py-12 text-center text-xs text-neutral-500">
+        You haven't listed any items yet.
+      </div>
+    <% } else { %>
+      <div class="divide-y divide-neutral-800">
+        <% listings.forEach(item => { %>
+          <div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-14 h-14 bg-neutral-900 rounded border border-neutral-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <% if (item.image_url) { %>
+                  <img src="<%= item.image_url %>" class="w-full h-full object-cover">
+                <% } else { %>
+                  <span class="text-[10px] text-neutral-600">No Image</span>
+                <% } %>
+              </div>
+              <div>
+                <a href="/listings/<%= item.id %>" class="text-sm font-semibold text-white hover:underline"><%= item.title %></a>
+                <div class="text-xs text-neutral-500 flex gap-2 items-center mt-0.5">
+                  <span><%= item.listing_type %></span>
+                  <span>&bull;</span>
+                  <span><%= item.listing_type === 'SELL' ? '₹' + item.price : (item.listing_type === 'GIVEAWAY' ? 'Free' : 'Exchange') %></span>
+                  <span>&bull;</span>
+                  <span class="uppercase text-[10px] px-1.5 py-0.2 rounded border border-neutral-800 <%= item.status === 'ACTIVE' ? 'text-emerald-400' : 'text-neutral-400' %>">
+                    <%= item.status %>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 self-end sm:self-center">
+              <% if (item.status === 'ACTIVE') { %>
+                <form action="/listings/<%= item.id %>/status" method="POST">
+                  <input type="hidden" name="status" value="SOLD">
+                  <button type="submit" class="border border-neutral-700 bg-neutral-800 text-neutral-200 px-3 py-1 rounded text-xs hover:bg-neutral-700">Mark Sold</button>
+                </form>
+                <form action="/listings/<%= item.id %>/status" method="POST">
+                  <input type="hidden" name="status" value="GIVEN_AWAY">
+                  <button type="submit" class="border border-neutral-700 bg-neutral-800 text-neutral-200 px-3 py-1 rounded text-xs hover:bg-neutral-700">Mark Given</button>
+                </form>
+              <% } %>
+              <form action="/listings/<%= item.id %>/status" method="POST" onsubmit="return confirm('Delete this listing permanently?')">
+                <input type="hidden" name="action" value="delete">
+                <button type="submit" class="text-red-500 hover:text-red-400 text-xs px-2 py-1">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

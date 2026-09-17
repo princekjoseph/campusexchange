@@ -30,10 +30,16 @@
         <span class="text-white font-bold tracking-tight text-lg">CampusExchange</span>
       </a>
       <nav class="flex items-center gap-4">
-        <a href="/listings" class="text-neutral-400 hover:text-white text-sm font-medium transition">Explore</a>
-        <a href="/listings/new" class="bg-white text-black hover:bg-neutral-200 px-3.5 py-1.5 rounded text-sm font-semibold transition">Post Item</a>
-        <a href="/login" class="text-neutral-400 hover:text-white text-sm font-medium transition">Sign In</a>
-      </nav>
+  <a href="/listings" class="text-neutral-400 hover:text-white text-sm font-medium transition">Explore</a>
+  <% if (user) { %>
+    <a href="/dashboard" class="text-neutral-400 hover:text-white text-sm font-medium transition">Dashboard</a>
+    <a href="/listings/new" class="bg-white text-black hover:bg-neutral-200 px-3.5 py-1.5 rounded text-sm font-semibold transition">Post Item</a>
+    <a href="/logout" class="text-xs border border-neutral-800 px-2.5 py-1 rounded text-neutral-400 hover:text-white transition">Sign Out</a>
+  <% } else { %>
+    <a href="/login" class="text-neutral-400 hover:text-white text-sm font-medium transition">Sign In</a>
+    <a href="/register" class="bg-white text-black hover:bg-neutral-200 px-3.5 py-1.5 rounded text-sm font-semibold transition">Register</a>
+  <% } %>
+</nav>
     </div>
   </header>
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">

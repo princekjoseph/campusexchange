@@ -1,0 +1,93 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-xl mx-auto py-6">
+  <div class="border border-neutral-800 bg-neutral-900/50 p-6 rounded-xl">
+    <h2 class="text-xl font-bold text-white mb-1">Post an Item</h2>
+    <p class="text-neutral-400 text-xs mb-6">List an item for sale, exchange, or giveaway</p>
+
+    <form action="/listings/new" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Item Title</label>
+        <input type="text" name="title" required placeholder="e.g. Casio Scientific Calculator FX-991EX" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Category</label>
+          <select name="category" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+            <option value="Electronics">Electronics</option>
+            <option value="Books">Books</option>
+            <option value="Study Materials">Study Materials</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Listing Type</label>
+          <select name="listing_type" id="listingType" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+            <option value="SELL">Sell (₹)</option>
+            <option value="EXCHANGE">Exchange</option>
+            <option value="GIVEAWAY">Giveaway (Free)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="priceField">
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Price (₹)</label>
+        <input type="number" name="price" placeholder="500" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white">
+      </div>
+
+      <div id="exchangeField" class="hidden">
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Looking to exchange for:</label>
+        <input type="text" name="exchange_for" placeholder="e.g. Python Programming Handbook" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Condition</label>
+          <select name="condition" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white">
+            <option value="New">Brand New</option>
+            <option value="Used - Good">Used - Good</option>
+            <option value="Used - Fair">Used - Fair</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-neutral-400 mb-1">Pickup Location</label>
+          <input type="text" name="location" required placeholder="e.g. Campus Library / Hostel Block A" class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Description</label>
+        <textarea name="description" rows="3" required placeholder="Describe condition, missing parts, usage duration..." class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Item Photo</label>
+        <input type="file" name="image" accept="image/*" class="w-full text-xs text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-neutral-800 file:text-white hover:file:bg-neutral-700">
+      </div>
+
+      <button type="submit" class="w-full bg-white text-black py-2.5 rounded font-semibold text-sm hover:bg-neutral-200 transition">Publish Item</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const typeSelect = document.getElementById('listingType');
+  const priceField = document.getElementById('priceField');
+  const exchangeField = document.getElementById('exchangeField');
+
+  typeSelect.addEventListener('change', (e) => {
+    if (e.target.value === 'SELL') {
+      priceField.classList.remove('hidden');
+      exchangeField.classList.add('hidden');
+    } else if (e.target.value === 'EXCHANGE') {
+      priceField.classList.add('hidden');
+      exchangeField.classList.remove('hidden');
+    } else {
+      priceField.classList.add('hidden');
+      exchangeField.classList.add('hidden');
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

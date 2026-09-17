@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-md mx-auto py-12">
+  <div class="border border-neutral-800 bg-neutral-900/60 p-8 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold text-white mb-2">Sign In</h2>
+    <p class="text-neutral-400 text-sm mb-6">Enter your credentials to manage your listings</p>
+
+    <% if (error) { %>
+      <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded text-sm mb-4">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/login" method="POST" class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Email</label>
+        <input type="email" name="email" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-neutral-400 mb-1">Password</label>
+        <input type="password" name="password" required class="w-full bg-neutral-950 border border-neutral-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-neutral-500">
+      </div>
+      <button type="submit" class="w-full bg-white text-black py-2 rounded font-semibold text-sm hover:bg-neutral-200 transition">Sign In</button>
+    </form>
+
+    <div class="mt-6 text-center text-xs text-neutral-500">
+      Don't have an account? <a href="/register" class="text-white hover:underline">Create one</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
