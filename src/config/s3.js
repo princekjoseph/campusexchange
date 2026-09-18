@@ -39,4 +39,25 @@ const uploadFile = async (file) => {
   return `/uploads/${fileName}`;
 };
 
-module.exports = { uploadFile };
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
+
+const deleteFile = async (fileUrl) => {
+  if (!fileUrl) return;
+  try {
+    const parsed = new URL(fileUrl);
+    // Extracts the key, e.g. "listings/1715000-image.jpg"
+    const key = decodeURIComponent(parsed.pathname.replace(/^\/+/, ''));
+    
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: key,
+      })
+    );
+    console.log(`Successfully deleted S3 object: ${key}`);
+  } catch (err) {
+    console.error('Error deleting from S3:', err.message);
+  }
+};
+
+module.exports = { uploadFile, deleteFile, s3Client };

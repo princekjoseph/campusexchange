@@ -1,5 +1,5 @@
 const { pool } = require('../config/db');
-const { uploadFile } = require('../config/s3');
+const { uploadFile, deleteFile } = require('../config/s3');
 
 // 1. Browse & Search Listings
 exports.getAllListings = async (req, res) => {
@@ -139,13 +139,33 @@ exports.updateListingStatus = async (req, res) => {
 
   try {
     if (action === 'delete') {
-      await pool.query('DELETE FROM listings WHERE id = $1 AND user_id = $2', [id, userId]);
+      // 1. Fetch the listing first to check ownership and get its image_url
+      const listingQuery = await pool.query(
+        'SELECT image_url FROM listings WHERE id = $1 AND user_id = $2',
+        [id, userId]
+      );
+
+      if (listingQuery.rows.length > 0) {
+        const imageUrl = listingQuery.rows[0].image_url;
+
+        // 2. Delete the photo from S3 if it exists
+        if (imageUrl && typeof deleteFile === 'function') {
+          await deleteFile(imageUrl);
+        }
+
+        // 3. Delete the listing row from PostgreSQL
+        await pool.query('DELETE FROM listings WHERE id = $1 AND user_id = $2', [id, userId]);
+      }
     } else if (['ACTIVE', 'SOLD', 'GIVEN_AWAY'].includes(status)) {
-      await pool.query('UPDATE listings SET status = $1 WHERE id = $2 AND user_id = $3', [status, id, userId]);
+      await pool.query(
+        'UPDATE listings SET status = $1 WHERE id = $2 AND user_id = $3',
+        [status, id, userId]
+      );
     }
+
     res.redirect('/dashboard');
   } catch (err) {
-    console.error(err);
+    console.error('Error updating or deleting listing:', err);
     res.redirect('/dashboard');
   }
 };
