@@ -74,3 +74,47 @@ exports.logout = (req, res) => {
   res.clearCookie('token');
   res.redirect('/');
 };
+
+// Render Profile Settings Page
+exports.getProfile = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, name, email, college, department, year, phone FROM users WHERE id = $1', [req.user.id]);
+    if (result.rows.length === 0) {
+      return res.redirect('/login');
+    }
+    res.render('pages/profile', { profile: result.rows[0], message: null, error: null });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/dashboard');
+  }
+};
+
+// Update Profile Details
+exports.postProfile = async (req, res) => {
+  const { name, college, department, year, phone } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const result = await pool.query(
+      `UPDATE users
+       SET name = $1, college = $2, department = $3, year = $4, phone = $5
+       WHERE id = $6
+       RETURNING id, name, email, college, department, year, phone`,
+      [name, college, department, year, phone, userId]
+    );
+
+    // Refresh JWT cookie with updated name/college
+    const updated = result.rows[0];
+    const token = createToken(updated.id, updated.name, updated.email, updated.college);
+    res.cookie('token', token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+    res.render('pages/profile', { profile: updated, message: 'Profile updated successfully.', error: null });
+  } catch (err) {
+    console.error(err);
+    res.render('pages/profile', {
+      profile: { id: userId, name, college, department, year, phone, email: req.user.email },
+      message: null,
+      error: 'Failed to update profile details.'
+    });
+  }
+};
