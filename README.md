@@ -1,38 +1,60 @@
-# CampusExchange 🎓
+# 🎓 CampusExchange
 
-A modern, dark-themed peer-to-peer marketplace tailored for university students to sell, exchange, or pass down campus essentials (textbooks, electronics, lab supplies).
+A secure, hyperlocal student marketplace platform built to streamline the buying, selling, and giving away of campus essentials—from textbooks and lab gear to dorm accessories—within a verified university ecosystem.
 
-## 🚀 Live Demo
-- **URL:** `http://43.204.211.94`
-
----
-
-## 🏗️ Architecture & AWS Cloud Design
-
-CampusExchange is deployed on AWS infrastructure utilizing containerized micro-services:
-
-- **Amazon EC2 (`t2.micro` / Ubuntu LTS):** Compute host running containerized backend services.
-- **Docker & Docker Compose:** Orchestrates multi-container architecture (Node.js App + PostgreSQL).
-- **Amazon S3:** Object storage bucket configured with public-read policy for item images.
-- **PostgreSQL 15:** Relational database with automated schema bootstrapping and persistent EBS volume mounts.
-- **AWS IAM:** Principle of least privilege (PoLP) credential management for AWS SDK integrations.
-- **AWS VPC & Security Groups:** Configured inbound firewall rules controlling TCP ports 22 (SSH), 80 (HTTP), and 5000.
+[![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-Backend-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![AWS EC2](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonec2&logoColor=white)](https://aws.amazon.com/ec2/)
+[![AWS S3](https://img.shields.io/badge/AWS-S3-569A31?logo=amazons3&logoColor=white)](https://aws.amazon.com/s3/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-black?logo=jsonwebtokens)](https://jwt.io/)
 
 ---
 
-## 🛠️ Tech Stack
+## 📌 Features
 
-- **Backend:** Node.js, Express.js
-- **Database:** PostgreSQL (via `pg` connection pool)
-- **Frontend / UI:** EJS templates styled with Tailwind CSS (Dark monochrome theme)
-- **Authentication:** JWT (JSON Web Tokens) stored in secure HTTP-only cookies + `bcryptjs` password hashing
-- **File Processing:** `multer` with direct streaming via `@aws-sdk/client-s3`
+- **Hyperlocal Campus Feed:** Filter listings by category (Textbooks, Electronics, Dorm, Free Giveaways).
+- **Listing Lifecycle Management:** Dedicated student dashboard to post, mark as sold, or archive listings.
+- **Secure Image Uploads:** Multi-image asset management powered directly via AWS S3.
+- **Student Profile & Contact Control:** Controlled exposure of contact details to reduce unsolicited spam.
+- **JWT-Protected Authentication:** Encrypted sessions and token verification for safe peer-to-peer exchanges.
+- **Clean Dark-Mode UI:** High-contrast, distraction-free visual interface.
 
 ---
 
-## 💻 Local Setup
+## 🏛️ System Architecture
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/](https://github.com/)<YOUR_GITHUB_USERNAME>/campusexchange.git
-   cd campusexchange
+```text
+                        +----------------------+
+                        |   Client Browser     |
+                        +----------+-----------+
+                                   |
+                             (HTTP Port 80)
+                                   v
+             +---------------------------------------------+
+             |             AWS EC2 Instance                |
+             |                                             |
+             |   +-------------------------------------+   |
+             |   |            Docker Host              |   |
+             |   |                                     |   |
+             |   |  +-------------------------------+  |   |
+             |   |  |   Node.js / Express Service   |  |   |
+             |   |  +---------------+---------------+  |   |
+             |   |                  |                  |   |
+             |   |                  v (TCP 5432)       |   |
+             |   |  +---------------+---------------+  |   |
+             |   |  |     PostgreSQL Database       |  |   |
+             |   |  +---------------+---------------+  |   |
+             |   |                  |                  |   |
+             |   |                  v                  |   |
+             |   |     [Docker Named Volume Data]      |   |
+             |   +-------------------------------------+   |
+             +---------------------+-----------------------+
+                                   |
+                              (AWS SDK)
+                                   v
+                        +----------------------+
+                        |     AWS S3 Bucket    |
+                        |   (Listing Images)   |
+                        +----------------------+
